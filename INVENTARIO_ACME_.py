@@ -1,9 +1,10 @@
 import datetime
 import json
+from config import *
 inventario_productos=[]
 codigo=[]
 productos_registrado=[]
-ruta_historial = "historial_de_datos.json"
+
 
 bodegas={
     1:"norte",
@@ -19,18 +20,19 @@ except FileNotFoundError:
         pass
     
 try:
-    with open("inventario.json"):
+    with open(ruta_inventario):
         pass
 except FileNotFoundError:
-    with open("inventario.json", "x"):
+    with open(ruta_inventario, "x"):
         pass
     
 
 def registar_productos_json(datos):
-    productos_registrado={
+    productos_registrado={     
+    
         "productos registrados": datos
         }
-    with open ("registro_de_productos.json", "w") as archivos:
+    with open (ruta_registro, "w") as archivos:
         obj_json=json.dumps(productos_registrado)
         archivos.write(obj_json)
         print("producto registrado en el inventario")
@@ -40,7 +42,7 @@ def ingresar_inventario_json():
     datos={
         "productos inventario":inventario_productos
     }
-    with open ("inventario.json","w")as archivos:
+    with open (ruta_inventario,"w")as archivos:
         obj_json=json.dumps(datos)
         archivos.write(obj_json)
         print("inventario agregado a archivo json")
@@ -69,7 +71,7 @@ def inventario_ingresado():
     codigo=int(input("ingrese el codigo del producto:"))
     codigo_encontrado=False
     
-    with open("registro_de_productos.json")as archivos:
+    with open(ruta_registro)as archivos:
         productos=json.load(archivos)
         
     for  item in productos ["productos registrados"]:
@@ -124,9 +126,8 @@ def sacar_productos():
     codigo=int(input("digite el codigo del producto que quiere reetirar:"))
     inventario = []
     
-    with open("inventario.json")as archivos:
+    with open(ruta_inventario)as archivos:
         try:
-            #error
             inventario = json.load(archivos)
         except json.JSONDecodeError:
             pass
@@ -146,7 +147,7 @@ def sacar_productos():
             if cantidad_retirar<=stock:
                 items ["stock"]-=cantidad_retirar
                 print(f"retiraste {cantidad_retirar}")
-            with open ("inventario.json","w") as archivos:
+            with open (ruta_inventario,"w") as archivos:
                 json.dump(inventario,archivos)
         else:
             print("la cantidad es invalida para hacer el retiro ")
@@ -154,7 +155,7 @@ def buscar_productos():
     print("---buscar productos---") 
     codigo=int(input("ingrese el codigo del producto que desea buscar:"))
     inventario=[]
-    with open("inventario.json")as archivos:
+    with open(ruta_inventario) as archivos:
         try:
             inventario=json.load(archivos)
         except json.JSONDecodeError:
@@ -165,7 +166,7 @@ def buscar_productos():
         if items ["codigo"]==codigo:
             codigo_encontrado=True
             print ("---producto encontrado en inventario---")
-            print(f"codigo:items{codigo},bodega:{items["bodega"]},cantidad:{items["cantidad"]},descripcion:{items["descripcion"]},stock:{items["stock"]}")
+            print(f"codigo:items{codigo},bodega:{items['bodega']},cantidad:{items['cantidad']},descripcion:{items['descripcion']},stock:{items['stock']}")
             
         
 def historial_productos():
@@ -187,42 +188,42 @@ def historial_productos():
 def reporte_inventario():
     print("---reporte de inventario---")
     inventario=[]
-    with open ("inventario.json")as archivos:
+    with open (ruta_inventario) as archivos:
         try:
             inventario=json.load(archivos)
         except json.JSONDecodeError:
             print("no hay productos en el inventario..")
             pass
-    #texto_reporte=
+    texto_reporte=""
     productos_totales={}
     for items in inventario["productos inventario"]:
-        codigo=items["codigo"]
-        bodega=items["bodega"]
-        cantidad=items["cantidad"]
+        codigo=items['codigo']
+        bodega=items['bodega']
+        cantidad=items['cantidad']
         
-    if codigo not in productos_totales:
-        productos_totales["codigo"]={
+        if codigo not in productos_totales:
+            productos_totales[codigo]={
             "norte":0,
             "centro":0,
             "oriente":0,
             "total":0
         }
-    productos_totales[codigo]["total"]+=cantidad
+    productos_totales[codigo]['total']+=cantidad
     productos_totales[codigo][bodega]+=cantidad
      
     for codigo,datos in productos_totales.items():
          print(f"codigo del producto:{codigo}\n")
-         print(f"cantidad total:{datos["total"]}")
-         print(f"norte:{datos["norte"]}")
-         print(f"centro:{datos["centro"]}")
-         print(f"oriente:{datos["oriente"]}")
+         print(f"cantidad total:{datos['total']}")
+         print(f"norte:{datos['norte']}")
+         print(f"centro:{datos['centro']}")
+         print(f"oriente:{datos['oriente']}")
         
-         texto_reporte+=(f"codigo del producto:{codigo},cantidad total:{datos["total"]}norte:{datos["norte"]},centro:{datos["centro"]},oriente:{datos["oriente"]}")
-         guardar_archivo=input("quiere guardar el reporte en un archivo? si/no")
-         if guardar_archivo.capitalize()=="SI":
-            with open ("reporte_inventario_ACME.txt","w")as archivo:
-             archivo.write(texto_reporte)  
-            print("su reporte se ha guardado en el archivo")
+    texto_reporte+=(f"codigo del producto:{codigo},cantidad total:{datos["total"]}norte:{datos['norte']},centro:{datos['centro']},oriente:{datos['oriente']}")
+    guardar_archivo=input("quiere guardar el reporte en un archivo? si/no")
+    if guardar_archivo.capitalize()=="SI":
+        with open (ruta_reporte,"w")as archivo:
+         archivo.write(texto_reporte)  
+         print("su reporte se ha guardado en el archivo")
     
     
 while True:
@@ -256,10 +257,6 @@ while True:
             
             
     
-        
-        
-        
-        
         
         
        
