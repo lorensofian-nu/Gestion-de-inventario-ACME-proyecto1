@@ -34,10 +34,11 @@ def registar_productos_json(datos):
         }
     with open (ruta_registro, "w") as archivos:
         obj_json=json.dumps(productos_registrado)
+        print("fggh:",type(obj_json))
         archivos.write(obj_json)
+        return obj_json
         print("producto registrado en el inventario")
      
-    
 def ingresar_inventario_json():
     datos={
         "productos inventario":inventario_productos
@@ -218,17 +219,54 @@ def reporte_inventario():
          print(f"centro:{datos['centro']}")
          print(f"oriente:{datos['oriente']}")
         
-    texto_reporte+=(f"codigo del producto:{codigo},cantidad total:{datos["total"]}norte:{datos['norte']},centro:{datos['centro']},oriente:{datos['oriente']}")
+    texto_reporte+=(f"codigo del producto:{codigo},cantidad total:{datos['total']}norte:{datos['norte']},centro:{datos['centro']},oriente:{datos['oriente']}")
     guardar_archivo=input("quiere guardar el reporte en un archivo? si/no")
     if guardar_archivo.capitalize()=="SI":
         with open (ruta_reporte,"w")as archivo:
          archivo.write(texto_reporte)  
          print("su reporte se ha guardado en el archivo")
+         
+def tranferir_productos_bodegas():
+    datos= ingresar_inventario_json()
+    inventario=0
+    codigo_producto=int(input("digite el codigo del producto:"))
+    bodega_origen=int(input("digite la bodega de origen del producto:"))
+    bodega_destino=int(input("ingrese el numero de la bodega a la que quiere tranferir el producto:"))
+    cantidad=int(input("ingrese la cantidad del producto:"))
+    
+    with open(ruta_inventario)as archivos:
+        inventario=json.load(archivos)
+    print(inventario)
+    for item in inventario:
+        if item["codigo"]==codigo_producto and item["bodega"]==bodega_origen:
+                if item["stock"]< cantidad:
+                    print("no puedes retirar hay stock insuficiente")
+                
+                
+        if ["stock"]>= cantidad:
+            destino_encontrado=True
+            for item in inventario:
+               if item ["codigo"]==codigo and  item["bodega"]==bodega_destino:
+                       destino_encontrado=item
+                       break
+        if destino_encontrado:
+            destino_encontrado["stock"]+= cantidad
+        else:
+            inventario_productos.append({
+                "bodega":bodega_destino,
+                "stock":cantidad,
+                "codigo":codigo,
+                "descripcion":item["descripcion"]
+            })
+            ingresar_inventario_json()
+            print("su producto fue tranferido a la nueva bodega")
+        
+    
     
     
 while True:
     print("---BIENVENIDO AL GESTOR DE INVENTARIO ACME----")
-    print("---MENU PRINCIPAL---:\n--1.registrar producto\n  --2.Ingresar inventario\n  --3.sacar producto de inventario\n  --4.Buscar producto\n  --5.historial de productos\n   --6.reporte\n  -- 7.salir\n  -- 8.regresar al inicio")       
+    print("---MENU PRINCIPAL---:\n--1.registrar producto\n  --2.Ingresar inventario\n  --3.sacar producto de inventario\n  --4.Buscar producto\n  --5.historial de productos\n   --6.reporte\n  -- 7.salir\n  -- 8.regresar al inicio\n ----9.tranferir productos entre bodegas")       
     opciones=(input("ingrese la opcion que desea: "))   
       
     match opciones:   
@@ -254,7 +292,8 @@ while True:
         case "8":
             print("regresando al menu principal")
             continue
-            
+        case "9":
+            tranferir_productos_bodegas()
             
     
         
